@@ -1,2 +1,1 @@
-<h3> chrome webRTC demo </h3>
-<h5> chrome 24 </h5>
+<h3> webRTC demo on chrome 24 </h3>
