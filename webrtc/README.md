@@ -1,1 +1,1 @@
-<h4> webrtc </h4>
+<h4> a webrtc demo only on chrome. </h4>
