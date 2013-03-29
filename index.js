@@ -75,7 +75,7 @@ OSSBucket.prototype.handle = function (context, next) {
           fileSize: file.size,
           fileName: file.filename
         }, function (err) {
-          if (err) {return uploadedFile(err);}
+          if (err) return uploadedFile(err);
           bucket.uploadFile(file.filename, file.size, file.mime, fs.createReadStream(file.path), uploadedFile);
         });
       } else {
@@ -89,41 +89,41 @@ OSSBucket.prototype.handle = function (context, next) {
     return ;
   }
 
-  if (req.method === "POST" || req.method === "PUT") {
+  if (request.method === "POST" || request.method === "PUT") {
 
-    domain.fileSize = ctx.req.headers['content-length'];
-    domain.fileName = path.basename(ctx.url);
+    domain.fileSize = context.req.headers['content-length'];
+    domain.fileName = path.basename(context.url);
 
     if (this.events.upload) {
-      this.events.upload.run(ctx, domain, function(err) {
-        if (err) return ctx.done(err);
-        bucket.upload(ctx, next);
+      this.events.upload.run(context, domain, function(err) {
+        if (err) return context.done(err);
+        bucket.upload(context, next);
       });
     } else {
-      this.upload(ctx, next);
+      this.upload(context, next);
     }
 
-  } else if (req.method === "GET") {
-    if (ctx.res.internal) return next(); // This definitely has to be HTTP
+  } else if (request.method === "GET") {
+    if (context.res.internal) return next(); // This definitely has to be HTTP
 
     if (this.events.get) {
-      this.events.get.run(ctx, domain, function(err) {
-        if (err) return ctx.done(err);
-        bucket.get(ctx, next);
+      this.events.get.run(context, domain, function(err) {
+        if (err) return context.done(err);
+        bucket.get(context, next);
       });
     } else {
-      this.get(ctx, next);
+      this.get(context, next);
     }
 
-  } else if (req.method === "DELETE") {
+  } else if (request.method === "DELETE") {
 
     if (this.events['delete']) {
-      this.events['delete'].run(ctx, domain, function(err) {
-        if (err) return ctx.done(err);
-        bucket.del(ctx, next);
+      this.events['delete'].run(context, domain, function(err) {
+        if (err) return context.done(err);
+        bucket.del(context, next);
       });
     } else {
-      this.del(ctx, next);
+      this.del(context, next);
     }
   } else {
     next();
@@ -138,7 +138,7 @@ OSSBucket.prototype.uploadFile = function (filename, filesize, mime, stream, fn)
   }
 
   this.client.putStream(stream, filename, headers, function (err, res) {
-    if (err) return {context.done(err);}
+    if (err) return context.done(err);
     if (res.statusCode !== 200) {
       bucket.readStream(res, function (err, message) {
         fn(err || message);
@@ -154,11 +154,11 @@ OSSBucket.prototype.upload = function (context, next) {
   var request = context.req;
   var headers = {
     'Content-Length': request.headers['content-length'],
-    'Content-Type': request.headers['content-type'];
+    'Content-Type': request.headers['content-type']
   }
 
   this.client.putStream(request, context.url, headers, function (err, res) {
-    if (err) {return context.done(err);}
+    if (err) return context.done(err);
     if (res.statusCode !== 200) {
       bucket.readStream(res, function (err, message) {
         context.done(err || message);
