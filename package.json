@@ -1,6 +1,6 @@
 {
   "name": "dpd-oss",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "the module of deployd to connect aliyun oss",
   "main": "index.js",
   "scripts": {
