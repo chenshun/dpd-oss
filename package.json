@@ -18,5 +18,10 @@
   "author": "haoxin",
   "license": "BSD",
   "readmeFilename": "README.md",
-  "gitHead": "e53eac25af98853d5e1161e2ca13dcaf3b89a420"
+  "gitHead": "e53eac25af98853d5e1161e2ca13dcaf3b89a420",
+  "devDependencies": {
+    "mocha": "1.8.x",
+    "request": "2.14.x",
+    "should": "1.2.x"
+  }
 }
