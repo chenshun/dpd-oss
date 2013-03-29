@@ -130,21 +130,21 @@ OSSBucket.prototype.handle = function (context, next) {
   }
 }
 
-OSSBucket.prototype.uploadFile = function (filename, filesize, mime, stream, fn) {
+OSSBucket.prototype.uploadFile = function (filename, filesize, mime, stream, callback) {
   var bucket = this;
   var headers = {
     'Content-Type': mime,
     'Content-Length': filesize
   }
 
-  this.client.putStream(stream, filename, headers, function (err, res) {
+  this.client.putStream(stream, filename, headers, function (err, response) {
     if (err) return context.done(err);
-    if (res.statusCode !== 200) {
-      bucket.readStream(res, function (err, message) {
-        fn(err || message);
+    if (response.statusCode !== 200) {
+      bucket.readStream(response, function (err, message) {
+        callback(err || message);
       })
     } else {
-      fn();
+      callback();
     }
   })
 }
@@ -157,10 +157,10 @@ OSSBucket.prototype.upload = function (context, next) {
     'Content-Type': request.headers['content-type']
   }
 
-  this.client.putStream(request, context.url, headers, function (err, res) {
+  this.client.putStream(request, context.url, headers, function (err, response) {
     if (err) return context.done(err);
-    if (res.statusCode !== 200) {
-      bucket.readStream(res, function (err, message) {
+    if (response.statusCode !== 200) {
+      bucket.readStream(response, function (err, message) {
         context.done(err || message);
       })
     } else {
@@ -179,10 +179,10 @@ OSSBucket.prototype.get = function (context, next) {
 
 OSSBucket.prototype.del = function (context, next) {
   var bucket = this;
-  this.client.deleteFile(context.url, function (err, res) {
+  this.client.deleteFile(context.url, function (err, response) {
     if (err) context.done(err);
-    if (res.statusCode !== 200) {
-      bucket.readStream(res, function (err, message) {
+    if (response.statusCode !== 200) {
+      bucket.readStream(response, function (err, message) {
         context.done(err || message);
       })
     } else {
@@ -191,13 +191,13 @@ OSSBucket.prototype.del = function (context, next) {
   })
 }
 
-OSSBucket.prototype.readStream = function (stream, fn) {
+OSSBucket.prototype.readStream = function (stream, callback) {
   var buffer = '';
   stream.on('data', function (data) {
     buffer += data;
   }).on('end', function () {
-    fn(null, buffer);
+    callback(null, buffer);
   }).on('error', function (err) {
-    fn(err);
+    callback(err);
   })
 }
