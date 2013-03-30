@@ -77,7 +77,7 @@ OSSBucket.prototype.handle = function (context, next) {
         }, function (err) {
           if (err) return uploadedFile(err);
           bucket.uploadFile(file.filename, file.size, file.mime, fs.createReadStream(file.path), uploadedFile);
-        });
+        })
       } else {
         bucket.uploadFile(file.filename, file.size, file.mime, fs.createReadStream(file.path), uploadedFile);
       }
@@ -97,7 +97,7 @@ OSSBucket.prototype.handle = function (context, next) {
       this.events.upload.run(context, domain, function(err) {
         if (err) return context.done(err);
         bucket.upload(context, next);
-      });
+      })
     } else {
       this.upload(context, next);
     }
@@ -108,7 +108,7 @@ OSSBucket.prototype.handle = function (context, next) {
       this.events.get.run(context, domain, function(err) {
         if (err) return context.done(err);
         bucket.get(context, next);
-      });
+      })
     } else {
       this.get(context, next);
     }
@@ -117,7 +117,7 @@ OSSBucket.prototype.handle = function (context, next) {
       this.events['delete'].run(context, domain, function(err) {
         if (err) return context.done(err);
         bucket.del(context, next);
-      });
+      })
     } else {
       this.del(context, next);
     }
@@ -167,10 +167,11 @@ OSSBucket.prototype.upload = function (context, next) {
 }
 
 OSSBucket.prototype.get = function (context, next) {
- var bucket = this;
- var url = 'http://oss.aliyuncs.com/' + this.config.bucket + context.url;
+  //get请求直接重定向到阿里云
+  var bucket = this;
+  var url = 'http://' + this.config.bucket + '.oss.aliyuncs.com/' + context.url;
 
- HttpUtil.redirect(context.res, url);
+  HttpUtil.redirect(context.res, url);
 }
 
 OSSBucket.prototype.del = function (context, next) {
