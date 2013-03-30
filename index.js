@@ -42,8 +42,8 @@ OSSBucket.prototype.handle = function (context, next) {
   var domin = {
     url: context.url
   }
-  //if (!request.internal) {return context.done('禁止客户端访问');}
-  //if (!this.client) {return context.done('missing oss configuration');}
+  //if (!request.internal) return context.done('禁止客户端访问');
+  //if (!this.client) return context.done('missing oss configuration');
 
   if (request.method === "POST" && !request.internal && request.headers['content-type'].indexOf('multipart/form-data') === 0) {
     var form = new formidable.IncomingForm();
@@ -90,7 +90,6 @@ OSSBucket.prototype.handle = function (context, next) {
   }
 
   if (request.method === "POST" || request.method === "PUT") {
-
     domain.fileSize = context.req.headers['content-length'];
     domain.fileName = path.basename(context.url);
 
@@ -102,7 +101,6 @@ OSSBucket.prototype.handle = function (context, next) {
     } else {
       this.upload(context, next);
     }
-
   } else if (request.method === "GET") {
     if (context.res.internal) return next(); // This definitely has to be HTTP
 
@@ -114,9 +112,7 @@ OSSBucket.prototype.handle = function (context, next) {
     } else {
       this.get(context, next);
     }
-
   } else if (request.method === "DELETE") {
-
     if (this.events['delete']) {
       this.events['delete'].run(context, domain, function(err) {
         if (err) return context.done(err);
