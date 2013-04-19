@@ -17,25 +17,25 @@ function OSSBucket (name, options) {
   }
 }
 util.inherits(OSSBucket, Resource);
-module.exports = OSSBucket;
+
 OSSBucket.label = "OSSBucket";
-OSSBucket.events = ['upload', 'get', 'delete'];
-OSSBucket.dashboard = {
-  path: path.join(__dirname, 'dashboard'),
-  pages: ['Properties', 'Data', 'Events', 'API']
-}
-OSSBucket.basicDashboard = {
-  settings: [{
-    name: 'bucket',
-    type: 'string'
-  }, {
-    name: 'key',
-    type: 'string'
-  }, {
-    name: 'secret',
-    type: 'string'
-  }]
-}
+// OSSBucket.events = ['upload', 'get', 'delete'];
+// OSSBucket.dashboard = {
+//   path: path.join(__dirname, 'dashboard'),
+//   pages: ['Properties', 'Data', 'Events', 'API']
+// }
+// OSSBucket.basicDashboard = {
+//   settings: [{
+//     name: 'bucket',
+//     type: 'string'
+//   }, {
+//     name: 'key',
+//     type: 'string'
+//   }, {
+//     name: 'secret',
+//     type: 'string'
+//   }]
+// }
 
 OSSBucket.prototype.clientGeneration = true;
 OSSBucket.prototype.handle = function (context, next) {
@@ -200,3 +200,5 @@ OSSBucket.prototype.readStream = function (stream, callback) {
     callback(err);
   })
 }
+
+module.exports = OSSBucket;
