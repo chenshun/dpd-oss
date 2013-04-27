@@ -19,5 +19,11 @@
   "gitHead": "e53eac25af98853d5e1161e2ca13dcaf3b89a420",
   "dependencies": {
     "formidable": "1.0.x"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
   }
 }

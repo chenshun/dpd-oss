@@ -1,5 +1,0 @@
---require should
---slow 25
---timeout 20000
---growl
---reporter spec
