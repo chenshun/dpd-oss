@@ -19,7 +19,7 @@ function OSSBucket (name, options) {
 util.inherits(OSSBucket, Resource);
 
 OSSBucket.label = "OSSBucket";
-OSSBucket.defaultPath = "/oss";
+OSSBucket.defaultPath = "/files";
 OSSBucket.basicDashboard = {
   settings: [{
     name: 'Bucket',
@@ -33,9 +33,8 @@ OSSBucket.basicDashboard = {
   }]
 }
 
-OSSBucket.prototype.clientGeneration = true;
+OSSBucket.prototype.clientGeneration = false;
 OSSBucket.prototype.handle = function (context, next) {
-  console.log(this.config)
   var request = context.req;
   var bucket = this;
   var domin = {
@@ -168,6 +167,7 @@ OSSBucket.prototype.get = function (context, next) {
   //get请求直接重定向到阿里云
   var bucket = this;
   var url = 'http://' + this.config.bucket + '.oss.aliyuncs.com/' + context.url;
+  console.log(context.res)
   HttpUtil.redirect(context.res, url);
 }
 
