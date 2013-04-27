@@ -1,11 +1,8 @@
 {
   "name": "dpd-oss",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "the module of deployd to connect aliyun oss",
   "main": "index.js",
-  "scripts": {
-    "test": "mocha"
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/coderhaoxin/dpd-oss"
@@ -13,7 +10,8 @@
   "keywords": [
     "deployd",
     "oss",
-    "aliyun"
+    "aliyun",
+    "bucket"
   ],
   "author": "haoxin",
   "license": "BSD",
@@ -21,13 +19,5 @@
   "gitHead": "e53eac25af98853d5e1161e2ca13dcaf3b89a420",
   "dependencies": {
     "formidable": "1.0.x"
-  },
-  "devDependencies": {
-    "mocha": "1.8.x",
-    "request": "2.14.x",
-    "should": "1.2.x"
-  },
-  "directories": {
-    "test": "test"
   }
 }
