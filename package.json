@@ -2,7 +2,7 @@
   "name": "dpd-oss",
   "version": "0.0.3",
   "description": "the module of deployd to connect aliyun oss",
-  "main": "index.js",
+  "main": "main.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/coderhaoxin/dpd-oss"
@@ -18,7 +18,13 @@
   "readmeFilename": "README.md",
   "gitHead": "e53eac25af98853d5e1161e2ca13dcaf3b89a420",
   "dependencies": {
-    "formidable": "1.0.x"
+    "formidable": "1.0.x",
+    "knox": "0.7.x",
+    "mime":"1.2.x",
+    "request":"2.20.x",
+    "xml2js":"0.2.x",
+    "step":"0.0.x",
+    "datetime":"0.0.3"
   },
   "directories": {
     "test": "test"

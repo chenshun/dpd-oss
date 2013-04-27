@@ -1,6 +1,7 @@
 var Resource = require('deployd/lib/resource');
 var HttpUtil = require('deployd/lib/util/http');
 var formidable = require('formidable');
+var knox = require('knox');
 var fs = require('fs');
 var util = require('util');
 var path = require('path');
@@ -8,11 +9,13 @@ var path = require('path');
 function OSSBucket (name, options) {
   Resource.apply(this, arguments);
   if (this.config.bucket && this.config.accessKeyId && this.config.accessKeySecret) {
-    this.client = {
+    this.client = knox.createClient({
       bucket: this.config.bucket,
-      accessKeyId: this.config.accessKeyId,
-      accessKeySecret: this.config.accessKeySecret
-    }
+      // accessKeyId: this.config.accessKeyId,
+      key: this.config.accessKeyId,
+      // accessKeySecret: this.config.accessKeySecret
+      secret: this.config.accessKeySecret
+    })
   }
 }
 
@@ -181,7 +184,8 @@ OSSBucket.prototype.del = function (context, next) {
   })
 }
 OSSBucket.prototype.readStream = function (stream, callback) {
-  var buffer = '';
+  // var buffer = '';
+  var buffer;
   stream.on('data', function (data) {
     buffer += data;
   }).on('end', function () {
