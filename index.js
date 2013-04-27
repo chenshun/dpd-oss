@@ -20,6 +20,7 @@ util.inherits(OSSBucket, Resource);
 
 OSSBucket.label = "OSSBucket";
 OSSBucket.defaultPath = "/files";
+OSSBucket.events = ['upload', 'delete'];
 OSSBucket.basicDashboard = {
   settings: [{
     name: 'Bucket',
@@ -129,7 +130,6 @@ OSSBucket.prototype.uploadFile = function (filename, filesize, mime, stream, cal
     'Content-Type': mime,
     'Content-Length': filesize
   }
-
   this.client.putStream(stream, filename, headers, function (err, response) {
     if (err) return context.done(err);
     if (response.statusCode !== 200) {
@@ -141,7 +141,6 @@ OSSBucket.prototype.uploadFile = function (filename, filesize, mime, stream, cal
     }
   })
 }
-
 OSSBucket.prototype.upload = function (context, next) {
   var bucket = this;
   var request = context.req;
@@ -149,7 +148,6 @@ OSSBucket.prototype.upload = function (context, next) {
     'Content-Length': request.headers['content-length'],
     'Content-Type': request.headers['content-type']
   }
-
   this.client.putStream(request, context.url, headers, function (err, response) {
     if (err) return context.done(err);
     if (response.statusCode !== 200) {
@@ -162,7 +160,6 @@ OSSBucket.prototype.upload = function (context, next) {
   })
   request.resume();
 }
-
 OSSBucket.prototype.get = function (context, next) {
   //get请求直接重定向到阿里云
   var bucket = this;
@@ -170,7 +167,6 @@ OSSBucket.prototype.get = function (context, next) {
   console.log(context.res)
   HttpUtil.redirect(context.res, url);
 }
-
 OSSBucket.prototype.del = function (context, next) {
   var bucket = this;
   this.client.deleteFile(context.url, function (err, response) {
@@ -184,7 +180,6 @@ OSSBucket.prototype.del = function (context, next) {
     }
   })
 }
-
 OSSBucket.prototype.readStream = function (stream, callback) {
   var buffer = '';
   stream.on('data', function (data) {
