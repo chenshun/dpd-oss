@@ -7,45 +7,42 @@ var path = require('path');
 
 function OSSBucket (name, options) {
   Resource.apply(this, arguments);
-  if (this.config.bucket && this.config.key && this.config.secret) {
-    //todo:配置处理
+  if (this.config.bucket && this.config.accessKeyId && this.config.accessKeySecret) {
     this.client = {
       bucket: this.config.bucket,
-      key: this.config.key,
-      secret: this.config.secret
+      accessKeyId: this.config.accessKeyId,
+      accessKeySecret: this.config.accessKeySecret
     }
   }
 }
+
 util.inherits(OSSBucket, Resource);
 
 OSSBucket.label = "OSSBucket";
-// OSSBucket.events = ['upload', 'get', 'delete'];
-// OSSBucket.dashboard = {
-//   path: path.join(__dirname, 'dashboard'),
-//   pages: ['Properties', 'Data', 'Events', 'API']
-// }
-// OSSBucket.basicDashboard = {
-//   settings: [{
-//     name: 'bucket',
-//     type: 'string'
-//   }, {
-//     name: 'key',
-//     type: 'string'
-//   }, {
-//     name: 'secret',
-//     type: 'string'
-//   }]
-// }
+OSSBucket.defaultPath = "/oss";
+OSSBucket.basicDashboard = {
+  settings: [{
+    name: 'Bucket',
+    type: 'text'
+  }, {
+    name: 'AccessKeyId',
+    type: 'text'
+  }, {
+    name: 'AccessKeySecret',
+    type: 'textarea'
+  }]
+}
 
 OSSBucket.prototype.clientGeneration = true;
 OSSBucket.prototype.handle = function (context, next) {
+  console.log(this.config)
   var request = context.req;
   var bucket = this;
   var domin = {
     url: context.url
   }
-  //if (!request.internal) return context.done('禁止客户端访问');
-  //if (!this.client) return context.done('missing oss configuration');
+
+  if (!this.client) return context.done('配置为空');
 
   if (request.method === "POST" && !request.internal && request.headers['content-type'].indexOf('multipart/form-data') === 0) {
     var form = new formidable.IncomingForm();
@@ -94,7 +91,6 @@ OSSBucket.prototype.handle = function (context, next) {
   if (request.method === "POST" || request.method === "PUT") {
     domain.fileSize = context.req.headers['content-length'];
     domain.fileName = path.basename(context.url);
-
     if (this.events.upload) {
       this.events.upload.run(context, domain, function(err) {
         if (err) return context.done(err);
@@ -172,7 +168,6 @@ OSSBucket.prototype.get = function (context, next) {
   //get请求直接重定向到阿里云
   var bucket = this;
   var url = 'http://' + this.config.bucket + '.oss.aliyuncs.com/' + context.url;
-
   HttpUtil.redirect(context.res, url);
 }
 
