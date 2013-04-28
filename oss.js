@@ -41,7 +41,7 @@ OSSBucket.prototype.handle = function (context, next) {
     ossOptions.accessKeySecret = this.config.accessKeySecret;
     oss = new ossApi.OssClient(ossOptions);
 
-    oss.putObject(this.config.bucket, Date.now().toString(), __dirname + '/index.js', function (err, result) {
+    oss.putObject(this.config.bucket, Date.now().toString(), __dirname + '/oss.js', function (err, result) {
       if (err) return console.log(err);
     })
   } else {
