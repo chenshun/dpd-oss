@@ -1,13 +1,21 @@
 var Resource = require('deployd/lib/resource');
 var HttpUtil = require('deployd/lib/util/http');
 var formidable = require('formidable');
-var ossApi = require('./lib/client');
+var ossAPI = require('./lib/client');
 var fs = require('fs');
 var util = require('util');
 var path = require('path');
 
 function OSSBucket (name, options) {
   Resource.apply(this, arguments);
+  if (this.config.bucket && this.config.accessKeyId && this.config.accessKeySecret) {
+    var ossOptions = {};
+    ossOptions.accessKeyId = this.config.accessKeyId;
+    ossOptions.accessKeySecret = this.config.accessKeySecret;
+    oss = new ossAPI.ossClient(ossOptions);
+  } else {
+    throw new Error('oss config missing');
+  }
 }
 
 util.inherits(OSSBucket, Resource);
@@ -35,27 +43,35 @@ OSSBucket.prototype.handle = function (context, next) {
   var domin = {
     url: context.url
   }
-  if (this.config.bucket && this.config.accessKeyId && this.config.accessKeySecret) {
-    var ossOptions = {};
-    ossOptions.accessKeyId = this.config.accessKeyId;
-    ossOptions.accessKeySecret = this.config.accessKeySecret;
-    oss = new ossApi.OssClient(ossOptions);
-
+  if (request.method === "POST" || request.method === "PUT" || request.method === 'GET') {
     oss.putObject(this.config.bucket, Date.now().toString(), __dirname + '/oss.js', function (err, result) {
-      if (err) return console.log(err);
+      if (err) {
+        return context.done(null, {
+          statusCode: 500,
+          message: 'upload failed'
+        })
+      } else {
+        return context.done(null, {
+          statusCode: 200,
+          message: 'upload success',
+          fileName: ''
+        })
+      }
+    })
+  } else if (request.method === "GET") {
+    //todo:重定向到阿里云
+    var url = 'http://' + bucket.config.bucket + '.oss.aliyuncs.com/' + domin.url.split('/')[2];
+    HttpUtil.redirect(context.res ,url);
+  } else if (request.method === "DELETE") {
+    return context.done(null, {
+      statusCode: 200,
+      message: 'delete success'
     })
   } else {
-    return context.done('config wrong');
-  }
-
-  if (request.method === "POST" || request.method === "PUT") {
-    return context.done('upload');
-  } else if (request.method === "GET") {
-    return context.done('hello get');
-  } else if (request.method === "DELETE") {
-    return context.done('hello delete');
-  } else {
-    return next();
+    return context.done(null, {
+      statusCode: 404,
+      message: 'unknow'
+    })
   }
 }
 
