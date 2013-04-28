@@ -6,35 +6,24 @@ var fs = require('fs');
 var util = require('util');
 var path = require('path');
 
-var option = {};
-var oss;
-
 function OSSBucket (name, options) {
   Resource.apply(this, arguments);
-  if (this.config.bucket && this.config.accessKeyId && this.config.accessKeySecret) {
-    option.accessId = this.config.accessKeyId;
-    option.accessKey = this.config.accessKeySecret;
-    oss = new ossApi.OssClient(option);
-    oss.putObject(bucketName, filename, localfilepath, function (err, result) {
-
-    })
-  }
 }
 
 util.inherits(OSSBucket, Resource);
 
 OSSBucket.label = "OSSBucket";
-OSSBucket.defaultPath = "/files";
+OSSBucket.defaultPath = "/kill-gbo";
 OSSBucket.events = ['upload', 'delete'];
 OSSBucket.basicDashboard = {
   settings: [{
-    name: 'Bucket',
+    name: 'bucket',
     type: 'text'
   }, {
-    name: 'AccessKeyId',
+    name: 'accessKeyId',
     type: 'text'
   }, {
-    name: 'AccessKeySecret',
+    name: 'accessKeySecret',
     type: 'textarea'
   }]
 }
@@ -46,68 +35,27 @@ OSSBucket.prototype.handle = function (context, next) {
   var domin = {
     url: context.url
   }
+  if (this.config.bucket && this.config.accessKeyId && this.config.accessKeySecret) {
+    var ossOptions = {};
+    ossOptions.accessId = this.config.accessKeyId;
+    ossOptions.accessKey = this.config.accessKeySecret;
 
-  if (!this.client) return context.done('配置为空');
-
-  if (request.method === "POST" && !request.internal && request.headers['content-type'].indexOf('multipart/form-data') === 0) {
-    var form = new formidable.IncomingForm();
-    var remaining = 0;
-    var files = [];
-    var error;
-
-    var uploadedFile = function (err) {
-      if (err) {
-        error = err;
-        return context.done(err);
-      } else if (!err) {
-        remaining--;
-        if (remaining <= 0) {
-          if (request.headers.referer) {
-            HttpUtil.redirect(context.res, request.headers.referer || '/');
-          } else {
-            context.done(null, files);
-          }
-        }
-      }
-    }
-
-    form.parse(request).on('file', function (name, file) {
-      remaining++;
-      if (bucket.events.upload) {
-        bucket.events.upload.run(context, {
-          url: context.url,
-          fileSize: file.size,
-          fileName: file.filename
-        }, function (err) {
-          if (err) return uploadedFile(err);
-          bucket.uploadFile(file.filename, file.size, file.mime, fs.createReadStream(file.path), uploadedFile);
-        })
-      } else {
-        bucket.uploadFile(file.filename, file.size, file.mime, fs.createReadStream(file.path), uploadedFile);
-      }
-    }).on('error', function (err) {
-      context.done(err);
-      error = err;
+    oss = new ossApi.OssClient(ossOptions);
+    oss.putObject(this.config.bucket, Date.now().toString(), __dirname + '/index.js', function (err, result) {
+      if (err) return console.log(err);
     })
-    request.resume();
-    return ;
+  } else {
+    return context.done('config wrong');
   }
 
   if (request.method === "POST" || request.method === "PUT") {
-    domain.fileSize = context.req.headers['content-length'];
-    domain.fileName = path.basename(context.url);
-    if (this.events.upload) {
-      this.events.upload.run(context, domain, function(err) {
-        if (err) return context.done(err);
-        bucket.upload(context, next);
-      })
-    } else {
-      this.upload(context, next);
-    }
+    return context.done('upload');
   } else if (request.method === "GET") {
+    return context.done('hello get');
   } else if (request.method === "DELETE") {
+    return context.done('hello delete');
   } else {
-    next();
+    return next();
   }
 }
 
